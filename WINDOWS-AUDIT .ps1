@@ -59,7 +59,7 @@ Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
 
 
 
-######### Checking Misconfigurations #########
+######### Checking Windows Security Misconfigurations
 
 
 $cekSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
@@ -76,7 +76,7 @@ else{
 }
 
 
-
+#
 
 
 

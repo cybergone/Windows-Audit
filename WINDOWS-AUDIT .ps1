@@ -61,9 +61,8 @@ Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
 
 ######### Checking Windows Security Misconfigurations
 
-
-$cekSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
 Write-Host "Checking SMBv1..."
+$cekSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
 
 if ($cekSMB1 -eq $false){
     Write-Host "SMBv1 Disabled, saved from SMBv1 Attack " -ForegroundColor "Green"
@@ -76,7 +75,11 @@ else{
 }
 
 
-#
+
+######### Checking Possible Privilege Escalation
+Write-Host "Checking Possible Privilege Escalations...."
+
+Write-Host "Checking Unquoted Service Path..."
 
 
 

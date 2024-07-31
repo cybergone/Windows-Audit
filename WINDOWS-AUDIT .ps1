@@ -14,15 +14,17 @@ if (!(Test-Path $Directory)) {
     New-Item -ItemType Directory -Path $Directory
 }
 
+Write-Host "This will create folder on" $Directory
+
 $hostname = hostname
 
-######### Computer Information #########
+######### Computer Information
 
 Write-Host "Getting Systeminfo..."
 systeminfo > "$Directory\systeminfo.txt"
 
 Write-Host "Getting Privilege Information..."
-whoami /priv > "$Directory\whoami-priv.txt"
+whoami /all > "$Directory\Privilege Information.txt"
 
 Write-Host "Getting IP Configuration..."
 ipconfig > "$Directory\ipconfig.txt"
@@ -42,8 +44,9 @@ wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\
 Write-Host "Getting Aliases for"$hostname"..."
 net localgroup > "$Directory\net localgroup $hostname.txt"
 
-Write-Host "Getting PC Antivirus Information..."
+Write-Host "Getting PC Antivirus and Antimalware Information..."
 Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > "$Directory\Antivirus Installed.txt"
+Get-WmiObject -Namespace root\Microsoft\SecurityClient -Class AntimalwareHealthStatus > "$Directory\Antimalware Installed.txt"
 
 Write-Host "Getting PC Last Boot Up Time..."
 Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"

@@ -7,7 +7,7 @@ _ _ _ _ _  _ ___  ____ _ _ _ ____    ____ _  _ ___  _ ___
                                               ~cybergone
 
 "
-#Membuat direktori pada "C:\temp\Windows Audit"
+#Create log audit on "C:\temp\Windows Audit"
 
 $Directory = "C:\temp\Windows Audit"
 if (!(Test-Path $Directory)) {
@@ -54,18 +54,28 @@ Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime 
 Write-Host "Getting PC Scheduled Tasks..."
 schtasks /Query /FO TABLE > "$Directory\schtask.txt"
 
+Write-Host "Getting PC Task List..."
+tasklist > "$Directory\tasklist.txt"
 
+Write-Host "Getting PC Account Setting..."
+net accounts >"$Directory\net account.txt"
+
+Write-Host "Getting PC Net Share..."
+net share >"$Directory\net share.txt"
+
+Write-Host "Getting Net Statistic for $hostname..."
+net statistics Workstation > "$Directory\net statistic.txt"
 
 
 ######### Checking Windows Security Misconfigurations
 
 Write-Host "Checking SMBv1..."
-$cekSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
+$checkSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
 
-if ($cekSMB1 -eq $false){
+if ($checkSMB1 -eq $false){
     Write-Host "SMBv1 Disabled, saved from SMBv1 Attack " -ForegroundColor "Green"
 }
-elseif ($cekSMB1 -eq $true) {
+elseif ($checkSMB1 -eq $true) {
     Write-Host "SMBv1 Enabled, please Disable for enhanced security" -ForegroundColor "Red"
 }
 else{
@@ -73,12 +83,12 @@ else{
 }
 
 Write-Host "Checking SMBv2..."
-$cekSMB1 = (Get-SmbServerConfiguration).EnableSMB2Protocol
+$checkSMB2 = (Get-SmbServerConfiguration).EnableSMB2Protocol
 
-if ($cekSMB1 -eq $false){
+if ($checkSMB2 -eq $false){
     Write-Host "SMBv2 Disabled" -ForegroundColor "Red"
 }
-elseif ($cekSMB1 -eq $true) {
+elseif ($checkSMB2 -eq $true) {
     Write-Host "SMBv2 Enabled" -ForegroundColor "Green"
 }
 else{
@@ -94,9 +104,29 @@ Write-Host "Getting permissions for every exe files in C:\Windows\system32..."
 $icaclsdir = "C:\Windows\System32"
 Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
     $icaclspath = $_.FullName
+    icacls $icaclspath 
+} | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
+
+Write-Host "Getting permissions for every exe files in C:\Windows\SysWOW64..."
+$icaclsdir = "C:\Windows\SysWOW64"
+Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+    $icaclspath = $_.FullName
     icacls $icaclspath
-    
-} | Out-File "C:\temp\Windows Audit\icacls.txt"
+} | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"
+
+Write-Host "Getting permissions for every exe files in C:\Program Files..."
+$icaclsdir = "C:\Program Files"
+Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+    $icaclspath = $_.FullName
+    icacls $icaclspath
+} | Out-File "C:\temp\Windows Audit\icacls ProgramFiles.txt"
+
+Write-Host "Getting permissions for every exe files in C:\Program Files (x86)..."
+$icaclsdir = "C:\Program Files (x86)"
+Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+    $icaclspath = $_.FullName
+    icacls $icaclspath
+} | Out-File "C:\temp\Windows Audit\icacls ProgramFilesx86.txt"
 
 Write-Host "Checking Unquoted Service Path..."
 

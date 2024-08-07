@@ -21,50 +21,113 @@ $hostname = hostname
 ######### Computer Information
 
 Write-Host "Getting Systeminfo..."
-systeminfo > "$Directory\systeminfo.txt"
 
+try {
+    systeminfo > "$Directory\systeminfo.txt"
+}
+catch {
+}
+    
 Write-Host "Getting Privilege Information..."
-whoami /all > "$Directory\Privilege Information.txt"
+try {
+    whoami /all > "$Directory\Privilege Information.txt"
+}
+catch {
+} 
 
 Write-Host "Getting IP Configuration..."
-ipconfig > "$Directory\ipconfig.txt"
+try {
+    ipconfig > "$Directory\ipconfig.txt"
+}
+catch {
+} 
 
 Write-Host "Getting PowerShell version..."
-$PSVersionTable.PSVersion > "$Directory\PowerShell version.txt"
+try {
+    $PSVersionTable.PSVersion > "$Directory\PowerShell version.txt"    
+}
+catch {
+}
 
 Write-Host "Getting PC Timezone..."
-Get-TimeZone > "$Directory\Timezone.txt"
+try {
+    Get-TimeZone > "$Directory\Timezone.txt"    
+}
+catch {
+}
+
 
 Write-Host "Getting Installed Programs..."
-Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object InstallDate, DisplayName, DisplayVersion, Publisher, InstallLocation, InstallSource | Sort-Object DisplayName > "$Directory\InstalledPrograms.txt"
+try {
+    Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object InstallDate, DisplayName, DisplayVersion, Publisher, InstallLocation, InstallSource | Sort-Object DisplayName > "$Directory\InstalledPrograms.txt"
+}
+catch {
+}
 
 Write-Host "Getting HotFix/Update Information..."
-wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\Get-Hotfix.txt"
+try {
+    wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\Get-Hotfix.txt"
+}
+catch {
+}
 
 Write-Host "Getting Aliases for"$hostname"..."
-net localgroup > "$Directory\net localgroup $hostname.txt"
+try {
+    net localgroup > "$Directory\net localgroup $hostname.txt"
+}
+catch {
+}
 
 Write-Host "Getting PC Antivirus and Antimalware Information..."
-Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > "$Directory\Antivirus Installed.txt"
-Get-WmiObject -Namespace root\Microsoft\SecurityClient -Class AntimalwareHealthStatus > "$Directory\Antimalware Installed.txt"
+try {
+    Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > "$Directory\Antivirus Installed.txt"
+    Get-WmiObject -Namespace root\Microsoft\SecurityClient -Class AntimalwareHealthStatus > "$Directory\Antimalware Installed.txt"
+}
+catch {
+}
 
 Write-Host "Getting PC Last Boot Up Time..."
-Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"
+try {
+    Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"
+}
+catch {
+}
 
 Write-Host "Getting PC Scheduled Tasks..."
-schtasks /Query /FO TABLE > "$Directory\schtask.txt"
+try {
+    schtasks /Query /FO TABLE > "$Directory\schtask.txt"
+}
+catch {
+}
 
 Write-Host "Getting PC Task List..."
-tasklist > "$Directory\tasklist.txt"
+try {
+    tasklist > "$Directory\tasklist.txt"
+}
+catch {
+}
 
 Write-Host "Getting PC Account Setting..."
-net accounts >"$Directory\net account.txt"
+try {
+    net accounts >"$Directory\net account.txt"
+}
+catch {
+}
+
 
 Write-Host "Getting PC Net Share..."
-net share >"$Directory\net share.txt"
+try {
+    net share >"$Directory\net share.txt"
+}
+catch {
+}
 
 Write-Host "Getting Net Statistic for $hostname..."
-net statistics Workstation > "$Directory\net statistic.txt"
+try {
+    net statistics Workstation > "$Directory\net statistic.txt" 
+}
+catch {
+}
 
 
 ######### Checking Windows Security Misconfigurations
@@ -114,19 +177,6 @@ Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
     icacls $icaclspath
 } | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"
 
-Write-Host "Getting permissions for every exe files in C:\Program Files..."
-$icaclsdir = "C:\Program Files"
-Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
-    $icaclspath = $_.FullName
-    icacls $icaclspath
-} | Out-File "C:\temp\Windows Audit\icacls ProgramFiles.txt"
-
-Write-Host "Getting permissions for every exe files in C:\Program Files (x86)..."
-$icaclsdir = "C:\Program Files (x86)"
-Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
-    $icaclspath = $_.FullName
-    icacls $icaclspath
-} | Out-File "C:\temp\Windows Audit\icacls ProgramFilesx86.txt"
 
 Write-Host "Checking Unquoted Service Path..."
 

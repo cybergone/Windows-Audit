@@ -165,20 +165,32 @@ Write-Host "Checking Possible Privilege Escalations...."
 
 Write-Host "Getting permissions for every exe files in C:\Windows\system32..."
 $icaclsdir = "C:\Windows\System32"
-Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+try {
+    Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
     $icaclspath = $_.FullName
-    icacls $icaclspath 
-} | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
+    icacls $icaclspath } | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
+}
+catch {
+}
+
 
 Write-Host "Getting permissions for every exe files in C:\Windows\SysWOW64..."
 $icaclsdir = "C:\Windows\SysWOW64"
-Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+try {
+    Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
     $icaclspath = $_.FullName
     icacls $icaclspath
-} | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"
+    } | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"   
+}
+catch {
+} 
 
 
 Write-Host "Checking Unquoted Service Path..."
+function CheckUnquotedSvc {
+    $unqtd = Get-WmiObject Win32_Service | Where-Object
+    
+}
 
 
 

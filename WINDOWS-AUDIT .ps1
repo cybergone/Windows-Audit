@@ -20,115 +20,143 @@ $hostname = hostname
 
 ######### Computer Information
 
-Write-Host "Getting Systeminfo..."
+function Get-ComputerInformation {
+    Write-Host "Getting Systeminfo..."
 
-try {
-    systeminfo > "$Directory\systeminfo.txt"
-}
-catch {
-}
+    try {
+        systeminfo > "$Directory\systeminfo.txt"
+    }
+    catch {
+        Write-Error "Error Getting Systeminfo"
+    }
+        
+    Write-Host "Getting Privilege Informations..."
+    try {
+        whoami /all > "$Directory\Privilege Information.txt"
+    }
+    catch {
+        Write-Error "Error Getting Privilege Informations"
+    } 
     
-Write-Host "Getting Privilege Information..."
-try {
-    whoami /all > "$Directory\Privilege Information.txt"
-}
-catch {
-} 
-
-Write-Host "Getting IP Configuration..."
-try {
-    ipconfig > "$Directory\ipconfig.txt"
-}
-catch {
-} 
-
-Write-Host "Getting PowerShell version..."
-try {
-    $PSVersionTable.PSVersion > "$Directory\PowerShell version.txt"    
-}
-catch {
-}
-
-Write-Host "Getting PC Timezone..."
-try {
-    Get-TimeZone > "$Directory\Timezone.txt"    
-}
-catch {
-}
-
-
-Write-Host "Getting Installed Programs..."
-try {
-    Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object InstallDate, DisplayName, DisplayVersion, Publisher, InstallLocation, InstallSource | Sort-Object DisplayName > "$Directory\InstalledPrograms.txt"
-}
-catch {
-}
-
-Write-Host "Getting HotFix/Update Information..."
-try {
-    wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\Get-Hotfix.txt"
-}
-catch {
-}
-
-Write-Host "Getting Aliases for"$hostname"..."
-try {
-    net localgroup > "$Directory\net localgroup $hostname.txt"
-}
-catch {
-}
-
-Write-Host "Getting PC Antivirus and Antimalware Information..."
-try {
-    Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > "$Directory\Antivirus Installed.txt"
-    Get-WmiObject -Namespace root\Microsoft\SecurityClient -Class AntimalwareHealthStatus > "$Directory\Antimalware Installed.txt"
-}
-catch {
-}
-
-Write-Host "Getting PC Last Boot Up Time..."
-try {
-    Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"
-}
-catch {
-}
-
-Write-Host "Getting PC Scheduled Tasks..."
-try {
-    schtasks /Query /FO TABLE > "$Directory\schtask.txt"
-}
-catch {
-}
-
-Write-Host "Getting PC Task List..."
-try {
-    tasklist > "$Directory\tasklist.txt"
-}
-catch {
-}
-
-Write-Host "Getting PC Account Setting..."
-try {
-    net accounts >"$Directory\net account.txt"
-}
-catch {
-}
-
-
-Write-Host "Getting PC Net Share..."
-try {
-    net share >"$Directory\net share.txt"
-}
-catch {
-}
-
-Write-Host "Getting Net Statistic for $hostname..."
-try {
-    net statistics Workstation > "$Directory\net statistic.txt" 
-}
-catch {
+    Write-Host "Getting IP Configuration..."
+    try {
+        ipconfig > "$Directory\ipconfig.txt"
+    }
+    catch {
+        Write-Error "Error Getting IP Configuration"
+    } 
+    
+    Write-Host "Getting PowerShell version..."
+    try {
+        $PSVersionTable.PSVersion > "$Directory\PowerShell version.txt"    
+    }
+    catch {
+        Write-Error "Error Getting PowerShell version"
+    }
+    
+    Write-Host "Getting PC Timezone..."
+    try {
+        Get-TimeZone > "$Directory\Timezone.txt"    
+    }
+    catch {
+        Write-Error "Error Getting PC Timezone"
+    }
+    
+    
+    Write-Host "Getting Installed Programs..."
+    try {
+        Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object InstallDate, DisplayName, DisplayVersion, Publisher, InstallLocation, InstallSource | Sort-Object DisplayName > "$Directory\InstalledPrograms.txt"
+    }
+    catch {
+        Write-Error "Error Getting Installed Programs"
+    }
+    
+    Write-Host "Getting HotFix/Update Informations..."
+    try {
+        wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\Get-Hotfix.txt"
+    }
+    catch {
+        Write-Error "Error Getting Hotfix/Update Informations"
+    }
+    
+    Write-Host "Getting Aliases for"$hostname"..."
+    try {
+        net localgroup > "$Directory\net localgroup $hostname.txt"
+    }
+    catch {
+        Write-Error "Error Getting Aliases for $hostname"
+    }
+    
+    Write-Host "Getting PC Last Boot Up Time..."
+    try {
+        Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"
+    }
+    catch {
+        Write-Error "Error getting PC Last Boot Up Time"
+    }
+    
+    Write-Host "Getting PC Scheduled Tasks..."
+    try {
+        schtasks /Query /FO TABLE > "$Directory\schtask.txt"
+    }
+    catch {
+        Write-Error "Error Getting PC Scheduled Tasks"
+    }
+    
+    Write-Host "Getting PC Task Lists..."
+    try {
+        tasklist > "$Directory\tasklist.txt"
+    }
+    catch {
+        Write-Error "Error getting PC Task Lists"
+    }
+    
+    Write-Host "Getting PC Account Settings..."
+    try {
+        net accounts >"$Directory\net account.txt"
+    }
+    catch {
+        Write-Error "Error Getting PC Account Settings"
+    }
+    
+    
+    Write-Host "Getting PC Net Share..."
+    try {
+        net share >"$Directory\net share.txt"
+    }
+    catch {
+        Write-Error "Error getting PC Net Share"
+    }
+    
+    Write-Host "Getting Net Statistic for $hostname..."
+    try {
+        net statistics Workstation > "$Directory\net statistic.txt" 
+    }
+    catch {
+        Write-Error "Error getting Net Statistic for $hostname"
+    }
 }
 
+Get-ComputerInformation
+
+function Get-AV {
+    Write-Host "Getting PC Antivirus and Antimalware Information..."
+    try {
+        Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > "$Directory\Antivirus Installed.txt"
+        Get-WmiObject -Namespace root\Microsoft\SecurityClient -Class AntimalwareHealthStatus > "$Directory\Antimalware Installed.txt"
+    }
+    catch [System.Management.Automation.RemoteException]{
+        Write-Error "Error Getting PC Antivirus and Antimalware Information"
+    }
+    catch [System.Management.Automation.InvalidArgumentException] {
+        Write-Error "Invalid argument for Get-WmiObject: $_"
+    }
+    catch {
+        Write-Error "Unexpected error: $_"
+    }
+}
+
+Get-AV
 
 ######### Checking Windows Security Misconfigurations
 
@@ -149,10 +177,10 @@ Write-Host "Checking SMBv2..."
 $checkSMB2 = (Get-SmbServerConfiguration).EnableSMB2Protocol
 
 if ($checkSMB2 -eq $false){
-    Write-Host "SMBv2 Disabled" -ForegroundColor "Red"
+    Write-Host "SMBv2 Disabled" -ForegroundColor "Green"
 }
 elseif ($checkSMB2 -eq $true) {
-    Write-Host "SMBv2 Enabled" -ForegroundColor "Green"
+    Write-Host "SMBv2 Enabled" -ForegroundColor "Red"
 }
 else{
     Write-Host "SMBv2 Not Found"
@@ -171,6 +199,7 @@ try {
     icacls $icaclspath } | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
 }
 catch {
+    Write-Error "Error Getting Permission for every exe files in C:\Windows\system32"
 }
 
 
@@ -183,14 +212,25 @@ try {
     } | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"   
 }
 catch {
+    Write-Error "Error getting permissions for every exe files in C:\Windows\SysWOW64"
 } 
 
 
 Write-Host "Checking Unquoted Service Path..."
-function CheckUnquotedSvc {
-    $unqtd = Get-WmiObject Win32_Service | Where-Object
-    
+function Get-VulnerableServices {
+    $services = Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\services | ForEach-Object { Get-ItemProperty $_.PsPath }
+
+    $vulnerableServices = foreach ($svc in $services) {
+        $svcPath = $svc.ImagePath -split ".exe"
+        if (($svcPath[0] -like "* *") -and ($svcPath[0] -notlike '"*') -and ($svcPath[0] -notlike "\*")) {
+            $svc | Select-Object DisplayName, ImagePath, PsPath, @{Name = "ACL"; Expression = {Get-Acl $_.ImagePath}}
+        }
+    }
+
+    $vulnerableServices
 }
+
+Get-VulnerableServices | Export-Csv -Path "C:\temp\Windows Audit\Unquoted Service Path.csv"  
 
 
 

@@ -21,6 +21,7 @@
     4. SMBv2 Check: Confirms if SMBv2 (a more secure file sharing protocol) is enabled.
     5. Possible Privilege Escalation: Identifies potential vulnerabilities that could allow privilege escalation. Output are __icacls__ based
     6. Unquoted Service Path Check: Detects services with unquoted paths in the registry, which might be a security risk.
+    7. Disable TLS 1.0 and TLS 1.1
 
 ### Requirements:
     PowerShell 5.1 or later

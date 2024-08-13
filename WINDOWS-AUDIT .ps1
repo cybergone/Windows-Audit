@@ -137,8 +137,6 @@ function Get-ComputerInformation {
     }
 }
 
-Get-ComputerInformation
-
 function Get-AV {
     Write-Host "Getting PC Antivirus and Antimalware Information..."
     try {
@@ -156,68 +154,74 @@ function Get-AV {
     }
 }
 
-Get-AV
-
 ######### Checking Windows Security Misconfigurations
 
-Write-Host "Checking SMBv1..."
-$checkSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
+function Get-SMBv1Check {
+    try {
+        Write-Host "Checking SMBv1..."
+        $checkSMB1 = (Get-SmbServerConfiguration).EnableSMB1Protocol
 
-if ($checkSMB1 -eq $false){
-    Write-Host "SMBv1 Disabled, saved from SMBv1 Attack " -ForegroundColor "Green"
-}
-elseif ($checkSMB1 -eq $true) {
-    Write-Host "SMBv1 Enabled, please Disable for enhanced security" -ForegroundColor "Red"
-}
-else{
-    Write-Host "SMBv1 Not Found"
-}
-
-Write-Host "Checking SMBv2..."
-$checkSMB2 = (Get-SmbServerConfiguration).EnableSMB2Protocol
-
-if ($checkSMB2 -eq $false){
-    Write-Host "SMBv2 Disabled" -ForegroundColor "Green"
-}
-elseif ($checkSMB2 -eq $true) {
-    Write-Host "SMBv2 Enabled" -ForegroundColor "Red"
-}
-else{
-    Write-Host "SMBv2 Not Found"
+        if ($checkSMB1 -eq $true){
+            Write-Host "SMBv1 Enabled, Please disable it" -ForegroundColor "Red"
+                }
+        else    {
+            Write-Host "SMBv1 Disabled" -ForegroundColor "Green"
+                }
+        } catch{
+            Write-Host "SMBv1 Not Found"
+        }
 }
 
+function Get-SMBv2Check {
+    try {
+        Write-Host "Checking SMBv2..."
+        $checkSMB1 = (Get-SmbServerConfiguration).EnableSMB2Protocol
 
+        if ($checkSMB1 -eq $true){
+            Write-Host "SMBv2 Enabled, Please disable it" -ForegroundColor "Red"
+                }
+        else    {
+            Write-Host "SMBv2 Disabled" -ForegroundColor "Green"
+                }
+        } catch{
+            Write-Host "SMBv2 Not Found"
+        }
+}
 
 ######### Checking Possible Privilege Escalation
-Write-Host "Checking Possible Privilege Escalations...."
 
-Write-Host "Getting permissions for every exe files in C:\Windows\system32..."
-$icaclsdir = "C:\Windows\System32"
-try {
-    Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
-    $icaclspath = $_.FullName
-    icacls $icaclspath } | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
+
+function Get-Privesc {
+    Write-Host "Checking Possible Privilege Escalations...."
+    Write-Host "Getting permissions for every exe files in C:\Windows\system32..."
+    $icaclsdir = "C:\Windows\System32"
+    try {
+        Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+        $icaclspath = $_.FullName
+        icacls $icaclspath } | Out-File "C:\temp\Windows Audit\icacls WindowsSystem32.txt"
+    }
+    catch {
+        Write-Error "Error Getting Permission for every exe files in C:\Windows\system32"
+    }
+
+    Write-Host "Getting permissions for every exe files in C:\Windows\SysWOW64..."
+    $icaclsdir = "C:\Windows\SysWOW64"
+    try {
+        Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
+        $icaclspath = $_.FullName
+        icacls $icaclspath } | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"   
+    }
+    catch {
+        Write-Error "Error getting permissions for every exe files in C:\Windows\SysWOW64"
+    } 
 }
-catch {
-    Write-Error "Error Getting Permission for every exe files in C:\Windows\system32"
-}
 
 
-Write-Host "Getting permissions for every exe files in C:\Windows\SysWOW64..."
-$icaclsdir = "C:\Windows\SysWOW64"
-try {
-    Get-ChildItem -Path $icaclsdir -Filter "*.exe" | ForEach-Object {
-    $icaclspath = $_.FullName
-    icacls $icaclspath
-    } | Out-File "C:\temp\Windows Audit\icacls WindowsSysWOW64.txt"   
-}
-catch {
-    Write-Error "Error getting permissions for every exe files in C:\Windows\SysWOW64"
-} 
 
 
-Write-Host "Checking Unquoted Service Path..."
-function Get-VulnerableServices {
+
+function Get-UnquotedSvc {
+    Write-Host "Checking Unquoted Service Path..."
     $services = Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\services | ForEach-Object { Get-ItemProperty $_.PsPath }
 
     $vulnerableServices = foreach ($svc in $services) {
@@ -230,14 +234,15 @@ function Get-VulnerableServices {
     $vulnerableServices
 }
 
-Get-VulnerableServices | Export-Csv -Path "C:\temp\Windows Audit\Unquoted Service Path.csv"  
+## Running
 
+Get-ComputerInformation
+Get-AV
+Get-SMBv1Check
+Get-SMBv2Check
+Get-UnquotedSvc | Export-Csv -Path "C:\temp\Windows Audit\Unquoted Service Path.csv"
+Get-Privesc
 
-
-
-# Zip file
-
-#Compress-Archive -Path "C:\temp\Windows Audit" -DestinationPath "C:\temp\Windows Audit($hostname).zip"
 
 
 Write-Host "============== DONE =============="

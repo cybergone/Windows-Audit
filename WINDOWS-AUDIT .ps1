@@ -6,8 +6,8 @@ _ _ _ _ _  _ ___  ____ _ _ _ ____    ____ _  _ ___  _ ___
              
                                               ~cybergone
 
-"
-#Create log audit on "C:\temp\Windows Audit"
+" -ForegroundColor "Green"
+#Create report on "C:\temp\Windows Audit"
 
 $Directory = "C:\temp\Windows Audit"
 if (!(Test-Path $Directory)) {
@@ -61,7 +61,6 @@ function Get-ComputerInformation {
     catch {
         Write-Error "Error Getting PC Timezone"
     }
-    
     
     Write-Host "Getting Installed Programs..."
     try {
@@ -118,7 +117,6 @@ function Get-ComputerInformation {
     catch {
         Write-Error "Error Getting PC Account Settings"
     }
-    
     
     Write-Host "Getting PC Net Share..."
     try {
@@ -188,8 +186,21 @@ function Get-SMBv2Check {
         }
 }
 
-######### Checking Possible Privilege Escalation
+function Set-DisableWeakTLS {
+    Write-Output "Disable TLS 1.0"
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /v Enabled /t REG_DWORD /d 0 /f
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server" /v DisabledByDefault /t REG_DWORD /d 1 /f
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v Enabled /t REG_DWORD /d 0 /f
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client" /v DisabledByDefault /t REG_DWORD /d 1 /f
 
+    Write-Output "Disable TLS 1.1"
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server" /v Enabled /t REG_DWORD /d 0 /f
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server" /v DisabledByDefault /t REG_DWORD /d 1 /f
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v Enabled /t REG_DWORD /d 0 /f 
+    reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client" /v DisabledByDefault /t REG_DWORD /d 1 /f
+}
+
+######### Checking Possible Privilege Escalation
 
 function Get-Privesc {
     Write-Host "Checking Possible Privilege Escalations...."
@@ -216,10 +227,6 @@ function Get-Privesc {
     } 
 }
 
-
-
-
-
 function Get-UnquotedSvc {
     Write-Host "Checking Unquoted Service Path..."
     $services = Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\services | ForEach-Object { Get-ItemProperty $_.PsPath }
@@ -234,6 +241,8 @@ function Get-UnquotedSvc {
     $vulnerableServices
 }
 
+
+
 ## Running
 
 Get-ComputerInformation
@@ -242,6 +251,7 @@ Get-SMBv1Check
 Get-SMBv2Check
 Get-UnquotedSvc | Export-Csv -Path "C:\temp\Windows Audit\Unquoted Service Path.csv"
 Get-Privesc
+Set-DisableWeakTLS
 
 
 

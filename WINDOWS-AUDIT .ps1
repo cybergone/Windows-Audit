@@ -27,7 +27,7 @@ function Get-ComputerInformation {
         systeminfo > "$Directory\systeminfo.txt"
     }
     catch {
-        Write-Error "Error Getting Systeminfo"
+        Write-Warning "Error Getting Systeminfo"
     }
         
     Write-Host "Getting Privilege Informations..."
@@ -35,15 +35,15 @@ function Get-ComputerInformation {
         whoami /all > "$Directory\Privilege Information.txt"
     }
     catch {
-        Write-Error "Error Getting Privilege Informations"
+        Write-Warning "Error Getting Privilege Informations"
     } 
     
     Write-Host "Getting IP Configuration..."
     try {
-        ipconfig > "$Directory\ipconfig.txt"
+        ipconfig /all > "$Directory\ipconfig.txt"
     }
     catch {
-        Write-Error "Error Getting IP Configuration"
+        Write-Warning "Error Getting IP Configuration"
     } 
     
     Write-Host "Getting PowerShell version..."
@@ -51,7 +51,7 @@ function Get-ComputerInformation {
         $PSVersionTable.PSVersion > "$Directory\PowerShell version.txt"    
     }
     catch {
-        Write-Error "Error Getting PowerShell version"
+        Write-Warning "Error Getting PowerShell version"
     }
     
     Write-Host "Getting PC Timezone..."
@@ -59,7 +59,7 @@ function Get-ComputerInformation {
         Get-TimeZone > "$Directory\Timezone.txt"    
     }
     catch {
-        Write-Error "Error Getting PC Timezone"
+        Write-Warning "Error Getting PC Timezone"
     }
     
     Write-Host "Getting Installed Programs..."
@@ -67,7 +67,7 @@ function Get-ComputerInformation {
         Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object InstallDate, DisplayName, DisplayVersion, Publisher, InstallLocation, InstallSource | Sort-Object DisplayName > "$Directory\InstalledPrograms.txt"
     }
     catch {
-        Write-Error "Error Getting Installed Programs"
+        Write-Warning "Error Getting Installed Programs"
     }
     
     Write-Host "Getting HotFix/Update Informations..."
@@ -75,7 +75,7 @@ function Get-ComputerInformation {
         wmic qfe get Caption,Description,HotfixID,InstalledOn,InstalledBy > "$Directory\Get-Hotfix.txt"
     }
     catch {
-        Write-Error "Error Getting Hotfix/Update Informations"
+        Write-Warning "Error Getting Hotfix/Update Informations"
     }
     
     Write-Host "Getting Aliases for"$hostname"..."
@@ -83,7 +83,7 @@ function Get-ComputerInformation {
         net localgroup > "$Directory\net localgroup $hostname.txt"
     }
     catch {
-        Write-Error "Error Getting Aliases for $hostname"
+        Write-Warning "Error Getting Aliases for $hostname"
     }
     
     Write-Host "Getting PC Last Boot Up Time..."
@@ -91,7 +91,7 @@ function Get-ComputerInformation {
         Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime > "$Directory\Last BootUp Time.txt"
     }
     catch {
-        Write-Error "Error getting PC Last Boot Up Time"
+        Write-Warning "Error getting PC Last Boot Up Time"
     }
     
     Write-Host "Getting PC Scheduled Tasks..."
@@ -99,7 +99,7 @@ function Get-ComputerInformation {
         schtasks /Query /FO TABLE > "$Directory\schtask.txt"
     }
     catch {
-        Write-Error "Error Getting PC Scheduled Tasks"
+        Write-Warning "Error Getting PC Scheduled Tasks"
     }
     
     Write-Host "Getting PC Task Lists..."
@@ -107,7 +107,7 @@ function Get-ComputerInformation {
         tasklist > "$Directory\tasklist.txt"
     }
     catch {
-        Write-Error "Error getting PC Task Lists"
+        Write-Warning "Error getting PC Task Lists"
     }
     
     Write-Host "Getting PC Account Settings..."
@@ -115,7 +115,7 @@ function Get-ComputerInformation {
         net accounts >"$Directory\net account.txt"
     }
     catch {
-        Write-Error "Error Getting PC Account Settings"
+        Write-Warning "Error Getting PC Account Settings"
     }
     
     Write-Host "Getting PC Net Share..."
@@ -123,7 +123,7 @@ function Get-ComputerInformation {
         net share >"$Directory\net share.txt"
     }
     catch {
-        Write-Error "Error getting PC Net Share"
+        Write-Warning "Error getting PC Net Share"
     }
     
     Write-Host "Getting Net Statistic for $hostname..."
@@ -131,7 +131,7 @@ function Get-ComputerInformation {
         net statistics Workstation > "$Directory\net statistic.txt" 
     }
     catch {
-        Write-Error "Error getting Net Statistic for $hostname"
+        Write-Warning "Error getting Net Statistic for $hostname"
     }
 }
 

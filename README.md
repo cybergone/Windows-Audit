@@ -19,7 +19,7 @@
     2. Antivirus and Antimalware Information: Provides details on your installed antivirus and antimalware software.
     3. SMBv1 Check: Verifies if SMBv1 (a less secure file sharing protocol) is disabled.
     4. SMBv2 Check: Confirms if SMBv2 (a more secure file sharing protocol) is enabled.
-    5. Possible Privilege Escalation: Identifies potential vulnerabilities that could allow privilege escalation. Output are __icacls__ based
+    5. Possible Privilege Escalation: Identifies potential vulnerabilities that could allow privilege escalation. The output based on icacls
     6. Unquoted Service Path Check: Detects services with unquoted paths in the registry, which might be a security risk.
     7. Disable TLS 1.0 and TLS 1.1
 
